@@ -13,6 +13,8 @@ import {
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import Toast from '../components/Toast';
+import { useState } from 'react';
 
 const checkoutSchema = z.object({
   name: z.string().min(2, '이름을 입력해주세요.'),
@@ -26,6 +28,7 @@ type CheckoutFormValues = z.infer<typeof checkoutSchema>;
 
 const Checkout = () => {
   const { cart, totalPrice } = useCart();
+  const [toast, setToast] = useState<{ message: string; isVisible: boolean }>({ message: '', isVisible: false });
   const { register, handleSubmit, formState: { errors } } = useForm<CheckoutFormValues>({
     resolver: zodResolver(checkoutSchema),
     defaultValues: {
@@ -35,7 +38,7 @@ const Checkout = () => {
 
   const onSubmit = (data: CheckoutFormValues) => {
     console.log('Order Data:', data);
-    alert('주문이 완료되었습니다! (데모)');
+    setToast({ message: '주문이 완료되었습니다! (데모)', isVisible: true });
   };
 
   return (
@@ -49,6 +52,11 @@ const Checkout = () => {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 lg:grid-cols-3 gap-16">
+        <Toast 
+          message={toast.message} 
+          isVisible={toast.isVisible} 
+          onClose={() => setToast(prev => ({ ...prev, isVisible: false }))} 
+        />
         {/* Checkout Form */}
         <div className="lg:col-span-2 space-y-12">
           {/* Shipping Info */}

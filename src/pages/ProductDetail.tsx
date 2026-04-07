@@ -32,6 +32,8 @@ const orderSchema = z.object({
 
 type OrderFormValues = z.infer<typeof orderSchema>;
 
+import Toast from '../components/Toast';
+
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -42,6 +44,7 @@ const ProductDetail = () => {
   const [step, setStep] = useState(1); // 1: Color, 2: Dimensions, 3: Summary
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
+  const [toast, setToast] = useState<{ message: string; isVisible: boolean }>({ message: '', isVisible: false });
 
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<OrderFormValues>({
     resolver: zodResolver(orderSchema),
@@ -76,16 +79,14 @@ const ProductDetail = () => {
         }
       });
       setIsAdding(false);
-      // Show success or navigate to cart
-      if (confirm('장바구니에 담겼습니다. 장바구니로 이동하시겠습니까?')) {
-        navigate('/cart');
-      }
+      setToast({ message: '장바구니에 담겼습니다.', isVisible: true });
+      setTimeout(() => navigate('/cart'), 1500);
     }, 800);
   };
 
   const nextStep = () => {
     if (step === 1 && !selectedColor) {
-      alert('색상을 선택해주세요.');
+      setToast({ message: '색상을 선택해주세요.', isVisible: true });
       return;
     }
     setStep(prev => Math.min(prev + 1, 3));
@@ -373,6 +374,11 @@ const ProductDetail = () => {
 
       {/* Detailed Info Tabs */}
       <section className="mt-32">
+        <Toast 
+          message={toast.message} 
+          isVisible={toast.isVisible} 
+          onClose={() => setToast(prev => ({ ...prev, isVisible: false }))} 
+        />
         <div className="flex justify-center border-b border-text/10 mb-16">
           {['Product Details', 'Reviews', 'Shipping & Returns'].map(tab => (
             <button 
