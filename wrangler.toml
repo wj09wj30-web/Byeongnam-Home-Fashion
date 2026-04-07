@@ -1,0 +1,11 @@
+name = "byeongnam-home-fashion"
+compatibility_date = "2024-04-01"
+compatibility_flags = ["nodejs_compat"]
+
+[site]
+bucket = "./dist"
+
+[env.production]
+# Cloudflare Pages doesn't strictly need wrangler.toml for static sites, 
+# but this helps if you use Cloudflare Functions.
+VITE_GEMINI_API_KEY = ""
